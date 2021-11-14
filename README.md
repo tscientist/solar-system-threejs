@@ -25,13 +25,16 @@ And of course Dillinger itself is open source with a [public repository][dill]
  on GitHub.
 
 ## Installation
+The program will be running on port 3000.
 
 ```sh
-cd dillinger
-npm i
-node app
+git clone git@github.com:tscientist/solar-system-threejs.git
+cd solar-system-threejs
 ```
-
+```sh
+npm install
+npm run dev
+```
    [dat.gui]: <https://github.com/dataarts/dat.gui>
    [React]: <https://pt-br.reactjs.org/>
    [Next.js]: <https://nextjs.org/>
