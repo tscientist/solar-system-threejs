@@ -51,13 +51,16 @@ export default function Home() {
 
     animateScene();
 
-    const sunGeometry = new THREE.SphereGeometry(14);
+    const sunGeometry = new THREE.SphereGeometry(12);
     const sunTexture = new THREE.TextureLoader().load("sun-texture.jpg");
     const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture });
     const sunMesh = new THREE.Mesh(sunGeometry, sunMaterial);
     const solarSystem = new THREE.Group();
     solarSystem.add(sunMesh);
     scene.add(solarSystem);
+    let sun = {  
+      rotation : false
+    };
 
     const earthGeometry = new THREE.SphereGeometry(3);
     const earthTexture = new THREE.TextureLoader().load("earth-texture.jpg");
@@ -73,26 +76,24 @@ export default function Home() {
     earthSystem.add(earthMesh);
     solarSystem.add(earthSystem);
 
-    // const moonGeometry = new THREE.SphereGeometry(0.5);
-    // const moonTexture = new THREE.TextureLoader().load("earth-texture.jpg");
-    // const moonMaterial = new THREE.MeshBasicMaterial({ map: moonTexture });
-    // const moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
-    // moonMesh.position.x += 55;
-    // let moon = {  
-    //   target : false,
-    //   rotation : false,
-    //   translation : false
-    // };
-    // let moonSystem = new THREE.Group();
-    // moonSystem.add(moonMesh);
-    // earthSystem.add(moonSystem);
-
     await initGui();
-    const solarSystemGui = gui.addFolder("solar system");
+    const solarSystemGui = gui.addFolder("Solar System");
     solarSystemGui.add(earthMesh, "visible").name("earth").listen();
     solarSystemGui.add(sunMesh, "visible").name("sun").listen();
+    solarSystemGui.add(activateRotation(sun), 'rotation').name("Sun Rotation");
     solarSystemGui.add(activateRotation(earth), 'rotation').name("Earth Rotation");
     solarSystemGui.add(activateTranslation(earth), 'translation').name("Earth Translation");
+
+    const scaleFolder = gui.addFolder('Scale')
+    const sunScaleFolder = scaleFolder.addFolder('Sun')
+    sunScaleFolder.add(sunMesh.scale, 'x', -5, 5)
+    sunScaleFolder.add(sunMesh.scale, 'y', -5, 5)
+    sunScaleFolder.add(sunMesh.scale, 'z', -5, 5)
+
+    const earthScaleFolder = scaleFolder.addFolder('Earth')
+    earthScaleFolder.add(earthMesh.scale, 'x', -5, 5)
+    earthScaleFolder.add(earthMesh.scale, 'y', -5, 5)
+    earthScaleFolder.add(earthMesh.scale, 'z', -5, 5)
 
     //Camera
     const cameraFolder = gui.addFolder('Camera')
@@ -108,8 +109,6 @@ export default function Home() {
     const animate = () => {
       render()
       sunMesh.rotation.y += 0.001;
-    
-      // moonSystem.rotation.y += 1 * Math.PI * (1 / 30) * (1 / 30);//earth rotate around the sun in 1 minute
 
       if (earth.target){
         camera.lookAt(earthMesh.position.x, earthMesh.position.y, earthMesh.position.z);
@@ -121,6 +120,10 @@ export default function Home() {
 
       if (earth.translation) {
         earthSystem.rotation.y += 2 * Math.PI * (1 / 60) * (1 / 60);//earth rotate around the sun in 1 minute
+      }
+
+      if (sun.rotation) {
+        sunMesh.rotation.y += 0.005;
       }
 
       requestAnimationFrame(animate);
