@@ -12,17 +12,15 @@ export default function Home() {
   };
 
   useEffect(async () => {
-    const camera = new THREE.PerspectiveCamera(
-      36,
-      window.innerWidth / window.innerHeight,
-      1,
-      1000
-    );
+    const camera = new THREE.PerspectiveCamera(36, window.innerWidth / window.innerHeight, 1, 1000);
     
     camera.position.z = 128;
   
     const scene = new THREE.Scene();
-  
+
+    const spaceTexture = new THREE.TextureLoader().load("space-texture2.png");
+    scene.background = spaceTexture;
+
     const renderer = new THREE.WebGLRenderer({
       canvas: document.getElementById("solar-system"),
       antialias: true,
@@ -35,7 +33,7 @@ export default function Home() {
   
     const stats = Stats();
     document.body.appendChild(stats.dom);
-  
+
     window.addEventListener("resize", () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
@@ -51,7 +49,7 @@ export default function Home() {
     animateScene();
 
     const sunGeometry = new THREE.SphereGeometry(14);
-    const sunTexture = new THREE.TextureLoader().load("blue-sun-texture.jpg");
+    const sunTexture = new THREE.TextureLoader().load("sun-texture.jpg");
     const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture });
     const sunMesh = new THREE.Mesh(sunGeometry, sunMaterial);
     const solarSystem = new THREE.Group();
@@ -83,7 +81,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div>
       <canvas id="solar-system" />
     </div>
   );
