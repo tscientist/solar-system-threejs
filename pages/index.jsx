@@ -40,9 +40,9 @@ export default function Home() {
       renderer.setSize(window.innerWidth, window.innerHeight);
     }, false);
     
-    function animateScene() {
+    const animateScene = () => {
       window.requestAnimationFrame(animateScene.bind(this));
-      renderer.render(scene, camera);
+      render()
       stats.update();
     }
 
@@ -56,27 +56,76 @@ export default function Home() {
     solarSystem.add(sunMesh);
     scene.add(solarSystem);
 
-    const earthGeometry = new THREE.SphereGeometry(4);
+    const earthGeometry = new THREE.SphereGeometry(3);
     const earthTexture = new THREE.TextureLoader().load("earth-texture.jpg");
     const earthMaterial = new THREE.MeshBasicMaterial({ map: earthTexture });
     const earthMesh = new THREE.Mesh(earthGeometry, earthMaterial);
     earthMesh.position.x += 48;
-    
+    let earth = {  
+      target : false,
+      rotation : false,
+      translation : false
+    };
     let earthSystem = new THREE.Group();
     earthSystem.add(earthMesh);
-
     solarSystem.add(earthSystem);
+
+    // const moonGeometry = new THREE.SphereGeometry(0.5);
+    // const moonTexture = new THREE.TextureLoader().load("earth-texture.jpg");
+    // const moonMaterial = new THREE.MeshBasicMaterial({ map: moonTexture });
+    // const moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
+    // moonMesh.position.x += 55;
+    // let moon = {  
+    //   target : false,
+    //   rotation : false,
+    //   translation : false
+    // };
+    // let moonSystem = new THREE.Group();
+    // moonSystem.add(moonMesh);
+    // earthSystem.add(moonSystem);
 
     await initGui();
     const solarSystemGui = gui.addFolder("solar system");
     solarSystemGui.add(earthMesh, "visible").name("earth").listen();
+    solarSystemGui.add(sunMesh, "visible").name("sun").listen();
+    solarSystemGui.add(activateRotation(earth), 'rotation').name("Earth Rotation");
+    solarSystemGui.add(activateTranslation(earth), 'translation').name("Earth Translation");
+
+    //Camera
+    const cameraFolder = gui.addFolder('Camera')
+
+    const cameraRotationFolder = cameraFolder.addFolder('Rotation')
+    cameraRotationFolder.add(camera.rotation, 'x',  -2, Math.PI * 2)
+    cameraRotationFolder.add(camera.rotation, 'y',  0, Math.PI * 2)
+    cameraRotationFolder.add(camera.rotation, 'z',  0, Math.PI * 2)
+
+    const cameraFocusFolder = cameraFolder.addFolder('Focus')
+    cameraFocusFolder.add(earth, 'target').name('Earth')
 
     const animate = () => {
+      render()
       sunMesh.rotation.y += 0.001;
-      earthMesh.rotation.y += 0.005;
-      earthSystem.rotation.y += 2 * Math.PI * (1 / 60) * (1 / 60);//earth rotate around the sun in 1 minute
+    
+      // moonSystem.rotation.y += 1 * Math.PI * (1 / 30) * (1 / 30);//earth rotate around the sun in 1 minute
+
+      if (earth.target){
+        camera.lookAt(earthMesh.position.x, earthMesh.position.y, earthMesh.position.z);
+      } 
+
+      if (earth.rotation) {
+        earthMesh.rotation.y += 0.005;
+      }
+
+      if (earth.translation) {
+        earthSystem.rotation.y += 2 * Math.PI * (1 / 60) * (1 / 60);//earth rotate around the sun in 1 minute
+      }
+
       requestAnimationFrame(animate);
     };
+
+    function render() {
+      renderer.render(scene, camera);
+    }
     animate();
   }, []);
 
