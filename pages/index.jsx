@@ -36,9 +36,12 @@ export default function Home() {
 
     await initGui();
     const solarSystemGui = gui.addFolder("solar system");
+    solarSystemGui.add(earthMesh, "visible").name("earth").listen();
 
     const animate = () => {
       sunMesh.rotation.y += 0.001;
+      earthMesh.rotation.y += 0.005;
+      earthSystem.rotation.y += 2 * Math.PI * (1 / 60) * (1 / 60);;
       requestAnimationFrame(animate);
     };
     animate();
